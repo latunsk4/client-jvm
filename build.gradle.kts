@@ -24,7 +24,7 @@ plugins {
 
 
 group = "com.github.latunsk4"
-version = "1.2-kotlin-upgrade-V2"
+version = "1.2-kotlin-upgrade-V3"
 
 
 
@@ -59,6 +59,7 @@ tasks {
 
     val sourcesJar by creating(Jar::class) {
         dependsOn(JavaPlugin.CLASSES_TASK_NAME)
+        classifier = "sources"
         from(sourceSets["main"].allSource)
     }
 
