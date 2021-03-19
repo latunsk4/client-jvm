@@ -2,12 +2,15 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
     }
 
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31")
         classpath("org.jetbrains.kotlin:kotlin-serialization:1.4.31")
     }
+
+
 }
 
 plugins {
@@ -16,9 +19,14 @@ plugins {
     kotlin("plugin.serialization") version "1.4.31"
     kotlin("kapt") version "1.4.31"
     maven
+    `maven-publish`
 }
 
-group = "com.github.mmoghaddam385"
+
+group = "com.github.latunsk4"
+version = "1.2-kotlin-upgrade"
+
+
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.31")

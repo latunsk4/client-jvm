@@ -1,2 +1,2 @@
 include ':sample'
-rootProject.name='PolygonKotlinClient'
+rootProject.name='client-jvm'
