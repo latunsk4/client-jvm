@@ -24,7 +24,7 @@ plugins {
 
 
 group = "com.github.latunsk4"
-version = "1.2-kotlin-upgrade"
+version = "1.2-kotlin-upgrade-V2"
 
 
 
