@@ -59,9 +59,11 @@ tasks {
 
     val sourcesJar by creating(Jar::class) {
         dependsOn(JavaPlugin.CLASSES_TASK_NAME)
-        classifier = "sources"
         from(sourceSets["main"].allSource)
     }
+
+    sourcesJar.archiveClassifier.convention("sources")
+    sourcesJar.archiveClassifier.set("sources")
 
     artifacts {
         add("archives", sourcesJar)
