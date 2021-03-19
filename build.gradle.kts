@@ -1,27 +1,28 @@
 buildscript {
     repositories {
+        mavenLocal()
         google()
         jcenter()
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61")
-        classpath("org.jetbrains.kotlin:kotlin-serialization:1.3.61")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31")
+        classpath("org.jetbrains.kotlin:kotlin-serialization:1.4.31")
     }
 }
 
 plugins {
     `java-library`
-    kotlin("jvm") version "1.3.61"
-    kotlin("plugin.serialization") version "1.3.61"
-    kotlin("kapt") version "1.3.61"
+    kotlin("jvm") version "1.4.31"
+    kotlin("plugin.serialization") version "1.4.31"
+    kotlin("kapt") version "1.4.31"
     maven
 }
 
 group = "com.github.mmoghaddam385"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.61")
+//    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.31")
 
     val ktorVersion = "1.3.1"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
