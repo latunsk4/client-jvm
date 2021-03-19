@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        mavenLocal()
         google()
         jcenter()
     }
@@ -22,7 +21,7 @@ plugins {
 group = "com.github.mmoghaddam385"
 
 dependencies {
-//    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.31")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.31")
 
     val ktorVersion = "1.3.1"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
