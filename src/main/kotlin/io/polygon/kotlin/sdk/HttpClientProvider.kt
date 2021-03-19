@@ -1,10 +1,7 @@
 package io.polygon.kotlin.sdk
 
 import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
@@ -61,7 +58,10 @@ constructor(
         HttpClient(buildEngine()) {
             install(WebSockets)
             install(JsonFeature) {
-                serializer = KotlinxSerializer(Json.nonstrict)
+                serializer = KotlinxSerializer(Json {
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                })
             }
         }
 

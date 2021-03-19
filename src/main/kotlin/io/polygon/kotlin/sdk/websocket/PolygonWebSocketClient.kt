@@ -52,7 +52,8 @@ constructor(
 ) {
 
     private val serializer by lazy {
-        Json(JsonConfiguration.Stable.copy(strictMode = false))
+        Json{isLenient = true
+            ignoreUnknownKeys = true}
     }
 
     private var activeConnection: WebSocketConnection? = null
@@ -186,7 +187,7 @@ constructor(
             if (sendRaw) {
                 listener.onReceive(this, RawMessage(frame.readBytes()))
             } else {
-                val json = serializer.parseJson(String(frame.readBytes()))
+                val json = serializer.parseToJsonElement(String(frame.readBytes()))
                 processFrameJson(json).forEach { listener.onReceive(this, it) }
             }
         } catch (ex: Exception) {
@@ -195,7 +196,7 @@ constructor(
         }
     }
 
-    @Throws(SerializationException::class, JsonException::class)
+    @Throws(SerializationException::class)
     private fun processFrameJson(
         frame: JsonElement,
         collector: MutableList<PolygonWebSocketMessage> = mutableListOf()
@@ -203,21 +204,21 @@ constructor(
 
         if (frame is JsonArray) {
             frame.jsonArray.forEach { processFrameJson(it, collector) }
-        }
 
+        }
         if (frame is JsonObject) {
-            val message = when (frame.jsonObject.getPrimitive(EVENT_TYPE_MESSAGE_KEY).contentOrNull) {
-                "status" -> serializer.fromJson(StatusMessage.serializer(), frame)
-                "T" -> serializer.fromJson(StocksMessage.Trade.serializer(), frame)
-                "Q" -> serializer.fromJson(StocksMessage.Quote.serializer(), frame)
-                "A", "AM" -> serializer.fromJson(StocksMessage.Aggregate.serializer(), frame)
-                "C" -> serializer.fromJson(ForexMessage.Quote.serializer(), frame)
-                "CA" -> serializer.fromJson(ForexMessage.Aggregate.serializer(), frame)
-                "XQ" -> serializer.fromJson(CryptoMessage.Quote.serializer(), frame)
-                "XT" -> serializer.fromJson(CryptoMessage.Trade.serializer(), frame)
-                "XA" -> serializer.fromJson(CryptoMessage.Aggregate.serializer(), frame)
-                "XS" -> serializer.fromJson(CryptoMessage.ConsolidatedQuote.serializer(), frame)
-                "XL2" -> serializer.fromJson(CryptoMessage.Level2Tick.serializer(), frame)
+            val message = when (frame.jsonObject[EVENT_TYPE_MESSAGE_KEY].toString()) {
+                "status" -> serializer.decodeFromJsonElement(StatusMessage.serializer(), frame)
+                "T" -> serializer.decodeFromJsonElement(StocksMessage.Trade.serializer(), frame)
+                "Q" -> serializer.decodeFromJsonElement(StocksMessage.Quote.serializer(), frame)
+                "A", "AM" -> serializer.decodeFromJsonElement(StocksMessage.Aggregate.serializer(), frame)
+                "C" -> serializer.decodeFromJsonElement(ForexMessage.Quote.serializer(), frame)
+                "CA" -> serializer.decodeFromJsonElement(ForexMessage.Aggregate.serializer(), frame)
+                "XQ" -> serializer.decodeFromJsonElement(CryptoMessage.Quote.serializer(), frame)
+                "XT" -> serializer.decodeFromJsonElement(CryptoMessage.Trade.serializer(), frame)
+                "XA" -> serializer.decodeFromJsonElement(CryptoMessage.Aggregate.serializer(), frame)
+                "XS" -> serializer.decodeFromJsonElement(CryptoMessage.ConsolidatedQuote.serializer(), frame)
+                "XL2" -> serializer.decodeFromJsonElement(CryptoMessage.Level2Tick.serializer(), frame)
                 else -> RawMessage(frame.toString().toByteArray())
             }
             collector.add(message)
@@ -226,9 +227,9 @@ constructor(
         return collector
     }
 
-    @Throws(SerializationException::class, JsonException::class)
+    @Throws(SerializationException::class)
     private fun parseAuthenticationFrame(frame: Frame): Boolean {
-        val response = serializer.parseJson(String(frame.readBytes()))
+        val response = serializer.parseToJsonElement(String(frame.readBytes()))
 
         if (response is JsonArray) {
             return response.any { parseStatusMessageForAuthenticationResult(it) }
@@ -241,10 +242,10 @@ constructor(
         return false
     }
 
-    @Throws(SerializationException::class, JsonException::class)
+    @Throws(SerializationException::class)
     private fun parseStatusMessageForAuthenticationResult(message: JsonElement): Boolean {
         if (message.isStatusMessage()) {
-            val status = serializer.fromJson(StatusMessage.serializer(), message)
+            val status = serializer.decodeFromJsonElement(StatusMessage.serializer(), message)
             if (status.message == "authenticated") {
                 activeConnection?.isAuthenticated = true
                 listener.onAuthenticated(this)
@@ -259,7 +260,7 @@ constructor(
      * If the first byte in the message is an open square bracket, this frame is housing an array
      */
     private fun JsonElement.isStatusMessage() =
-        this is JsonObject && jsonObject.getPrimitive(EVENT_TYPE_MESSAGE_KEY).contentOrNull == "status"
+        this is JsonObject && jsonObject[EVENT_TYPE_MESSAGE_KEY].toString() == "status"
 }
 
 private class WebSocketConnection(
