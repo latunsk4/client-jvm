@@ -2,7 +2,6 @@ buildscript {
     repositories {
         google()
         jcenter()
-        mavenCentral()
     }
 
     dependencies {
@@ -31,11 +30,13 @@ version = "1.2-kotlin-upgrade-V4"
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.31")
 
-    val ktorVersion = "1.5.2"
+    val ktorVersion = "1.5.1"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-websockets:$ktorVersion")
     implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
     implementation("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
+
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
     // Annotation processor that generates Java builders for data classes
     val ktBuilderVersion = "1.2.1"
