@@ -207,18 +207,21 @@ constructor(
 
         }
         if (frame is JsonObject) {
-            val message = when (frame.jsonObject[EVENT_TYPE_MESSAGE_KEY].toString()) {
-                "status" -> serializer.decodeFromJsonElement(StatusMessage.serializer(), frame)
-                "T" -> serializer.decodeFromJsonElement(StocksMessage.Trade.serializer(), frame)
-                "Q" -> serializer.decodeFromJsonElement(StocksMessage.Quote.serializer(), frame)
-                "A", "AM" -> serializer.decodeFromJsonElement(StocksMessage.Aggregate.serializer(), frame)
-                "C" -> serializer.decodeFromJsonElement(ForexMessage.Quote.serializer(), frame)
-                "CA" -> serializer.decodeFromJsonElement(ForexMessage.Aggregate.serializer(), frame)
-                "XQ" -> serializer.decodeFromJsonElement(CryptoMessage.Quote.serializer(), frame)
-                "XT" -> serializer.decodeFromJsonElement(CryptoMessage.Trade.serializer(), frame)
-                "XA" -> serializer.decodeFromJsonElement(CryptoMessage.Aggregate.serializer(), frame)
-                "XS" -> serializer.decodeFromJsonElement(CryptoMessage.ConsolidatedQuote.serializer(), frame)
-                "XL2" -> serializer.decodeFromJsonElement(CryptoMessage.Level2Tick.serializer(), frame)
+
+            val content = (frame.jsonObject[EVENT_TYPE_MESSAGE_KEY] as JsonPrimitive).contentOrNull
+
+            val message = when (content) {
+                "status" -> serializer.decodeFromJsonElement<StatusMessage>(frame)
+                "T" -> serializer.decodeFromJsonElement<StocksMessage.Trade>(frame)
+                "Q" -> serializer.decodeFromJsonElement<StocksMessage.Quote>(frame)
+                "A", "AM" -> serializer.decodeFromJsonElement<StocksMessage.Aggregate>(frame)
+                "C" -> serializer.decodeFromJsonElement<ForexMessage.Quote>(frame)
+                "CA" -> serializer.decodeFromJsonElement<ForexMessage.Aggregate>(frame)
+                "XQ" -> serializer.decodeFromJsonElement<CryptoMessage.Quote>(frame)
+                "XT" -> serializer.decodeFromJsonElement<CryptoMessage.Trade>(frame)
+                "XA" -> serializer.decodeFromJsonElement<CryptoMessage.Aggregate>(frame)
+                "XS" -> serializer.decodeFromJsonElement<CryptoMessage.ConsolidatedQuote>(frame)
+                "XL2" -> serializer.decodeFromJsonElement<CryptoMessage.Level2Tick>(frame)
                 else -> RawMessage(frame.toString().toByteArray())
             }
             collector.add(message)
